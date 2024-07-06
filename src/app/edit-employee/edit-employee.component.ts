@@ -6,6 +6,7 @@ import { ModalComponent } from '../modal/modal.component';
 import { EmployeeService } from '../services/employee.service';
 import { ListEmployee } from '../list-employee/list-employee.component';
 import moment from 'moment';
+import { NotificationService, NotificationType } from '../services/notification.service';
 
 @Component({
   selector: 'app-edit-employee',
@@ -25,7 +26,7 @@ export class EmployeeEditComponent extends ModalComponent implements OnInit {
 
   listEmpServe!: ListEmployee
 
-  constructor(empSrv: EmployeeService, listEmpSrv: ListEmployee) {
+  constructor(empSrv: EmployeeService, listEmpSrv: ListEmployee,private notificationService: NotificationService) {
     super();
     this.listEmpServe = listEmpSrv
     this.employeeService = new EmployeeService();
@@ -71,11 +72,9 @@ export class EmployeeEditComponent extends ModalComponent implements OnInit {
 
   onUpdate() {
     if (this.employeeFormEdit.valid) {
-      console.log('Form Submitted!', this.employeeFormEdit.value);
       const oldValue = this.employeeFormEdit.value
       this.employeeService.updateEmployee(this.employeeId, this.employeeFormEdit.value)
-      // const newValue = { ...oldValue, id: this.listEmpSrv.employees.length + 1 }
-      // this.employeeService.addEmployee(newValue)
+      this.notificationService.showNotification(NotificationType.Edit, 'Form updated successfully!');
       this.listEmpServe.setPage(this.listEmpServe.currentPage)
       this.close();
     }

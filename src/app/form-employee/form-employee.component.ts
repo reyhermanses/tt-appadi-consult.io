@@ -5,6 +5,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { EmployeeService } from '../services/employee.service';
 import { ModalComponent } from '../modal/modal.component';
 import { ListEmployee } from '../list-employee/list-employee.component';
+import { NotificationService , Notification, NotificationType} from '../services/notification.service';
 
 @Component({
   selector: 'app-form-employee',
@@ -14,12 +15,13 @@ import { ListEmployee } from '../list-employee/list-employee.component';
   imports: [CommonModule, ReactiveFormsModule]
 })
 export class CreateEmployeeComponent extends ModalComponent {
+  notification: Notification | null = null;
   employeeForm!: FormGroup;
   employeeService!: EmployeeService;
   listEmployee!: ListEmployee;
   // modalComponent: ModalComponent;
 
-  constructor(private fb: FormBuilder, private empSrv: EmployeeService, private listEmpSrv: ListEmployee) {
+  constructor(private fb: FormBuilder, private empSrv: EmployeeService, private listEmpSrv: ListEmployee,private notificationService: NotificationService) {
     // this.modalComponent = pMModalComponent;
     super();
     this.employeeForm = this.fb.group({
@@ -39,6 +41,12 @@ export class CreateEmployeeComponent extends ModalComponent {
     this.listEmployee = listEmpSrv;
   }
 
+  ngOnInit():void{
+    // this.notificationService.notification$.subscribe((notification: Notification | null) => {
+    //   this.notification = notification;
+    // });
+  }
+
   checkStatus(status: string) {
     return status === 'Pilih' ? false : true
   }
@@ -54,6 +62,7 @@ export class CreateEmployeeComponent extends ModalComponent {
       const newValue = { ...oldValue, id: this.listEmpSrv.employees.length + 1 }
       this.employeeService.addEmployee(newValue)
       this.listEmpSrv.setPage(this.listEmpSrv.totalPage)
+      this.notificationService.showNotification(NotificationType.Success, 'Form created successfully!');
       this.close();
     }
     else {
